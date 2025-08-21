@@ -3,7 +3,7 @@
 # Start the development environment
 cd "$(dirname "$0")/dev"
 echo "Starting WordPress development environment with MCP server..."
-docker-compose up -d
+docker compose up -d
 
 echo ""
 echo "WordPress development environment is running!"

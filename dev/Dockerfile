@@ -25,5 +25,5 @@ RUN cd /var/www/html/wp-content/plugins && \
     npm install && npm run build
 
 # Configure WordPress MCP
-RUN echo "define('WPMCP_JWT_SECRET_KEY', 'dev-secret-key');" >> /var/www/html/wp-config.php && \
-    echo "define('WPMCP_DEBUG', true);" >> /var/www/html/wp-config.php
+RUN echo "define('WPMCP_JWT_SECRET_KEY', 'dev-secret-key');" >> /var/www/html/wp-config-sample.php && \
+    echo "define('WPMCP_DEBUG', true);" >> /var/www/html/wp-config-sample.php

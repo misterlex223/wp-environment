@@ -6,14 +6,18 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: wp-qa
-    env_file:
-      - wordpress.env
     depends_on:
       - db
     networks:
       - wp_network
     ports:
       - "8081:80"
+    environment:
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DEBUG: ${WORDPRESS_DEBUG}
     volumes:
       - wordpress_qa_data:/var/www/html
       - ${PLUGIN_SRC_PATH}:/var/www/html/wp-content/plugins/${PLUGIN_DEST_NAME}

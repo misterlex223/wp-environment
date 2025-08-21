@@ -7,14 +7,19 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: wp-dev
-    env_file:
-      - wordpress.env
     depends_on:
       - db
     networks:
       - wp_network
     ports:
       - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DEBUG: ${WORDPRESS_DEBUG}
+      WORDPRESS_CONFIG_EXTRA: ${WORDPRESS_CONFIG_EXTRA}
     volumes:
       - wordpress_data:/var/www/html
       - ${PLUGIN_SRC_PATH}:/var/www/html/wp-content/plugins/${PLUGIN_DEST_NAME}   # 將 Plugin 挂載到 WordPress
@@ -26,10 +31,10 @@ services:
     container_name: wp-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
+      MYSQL_ROOT_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
+      MYSQL_USER: ${WORDPRESS_DB_USER}
+      MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
     networks:

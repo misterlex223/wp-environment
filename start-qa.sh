@@ -3,7 +3,7 @@
 # Start the QA environment
 cd "$(dirname "$0")/qa"
 echo "Starting WordPress QA environment with MCP server..."
-docker-compose up -d
+docker compose up -d
 
 echo ""
 echo "WordPress QA environment is running!"

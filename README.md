@@ -1,24 +1,27 @@
-# WordPress Plugin Development Environments
+# WordPress Plugin Development Environment
 
-This repository contains Docker configurations for WordPress plugin development with integrated WordPress MCP (Model Context Protocol) server. The setup includes both development and QA environments.
+This repository contains Docker configurations for WordPress plugin development with integrated WordPress MCP (Model Context Protocol) server. The setup includes both development and QA environments with a unified environment variable structure.
 
 ## Environment Structure
 
 ```
-environments/
+environment/
 ├── dev/                    # Development environment
 │   ├── Dockerfile          # WordPress with MCP and development tools
 │   ├── docker-compose.yml  # Docker Compose configuration with WordPress and MySQL
-│   ├── .env                # Environment variables for Docker Compose
-│   ├── wordpress.env       # WordPress environment variables
+│   ├── .env                # Environment variables (copy from .env-example)
+│   ├── .env-example        # Example environment variables
 │   └── xdebug.ini          # Xdebug configuration for development
 ├── qa/                     # QA environment
 │   ├── Dockerfile          # WordPress with MCP for QA testing
 │   ├── docker-compose.yml  # Docker Compose configuration for QA
-│   ├── .env                # Environment variables for Docker Compose
-│   ├── wordpress.env       # WordPress environment variables for QA
+│   ├── .env                # Environment variables (copy from .env-example)
+│   ├── .env-example        # Example environment variables
 │   └── xdebug.ini          # Minimal Xdebug configuration for QA
-└── README.md               # This documentation file
+├── start-dev.sh            # Start development environment
+├── stop-dev.sh             # Stop development environment
+├── start-qa.sh             # Start QA environment
+└── stop-qa.sh              # Stop QA environment
 ```
 
 ## Development Environment
@@ -79,45 +82,48 @@ The MCP server is configured with:
 To develop a WordPress plugin:
 
 1. Place your plugin code in the appropriate directory structure
-2. Mount your plugin directory to the WordPress container
+2. Mount your plugin directory to the WordPress container using the `PLUGIN_SRC_PATH` in `.env`
 3. Activate the plugin through the WordPress admin interface
 
 ## Environment Variables
 
-The environments use two different types of environment variable files, each serving a distinct purpose:
+The environment uses a unified `.env` file that contains all necessary configurations for both Docker Compose and WordPress. This ensures consistency between the WordPress application and its database.
 
-### 1. `.env` File (Docker Compose Variables)
+### `.env` File Structure
 
-The `.env` file contains variables used by Docker Compose itself for configuration:
+```
+# Plugin Configuration
+PLUGIN_SRC_PATH=../../sync-fire-wp  # Path to your plugin source code
+PLUGIN_DEST_NAME=sync-fire          # Destination folder name in WordPress
 
-- `PLUGIN_SRC_PATH`: The source path to your WordPress plugin directory
-- `PLUGIN_DEST_NAME`: The destination folder name in the WordPress plugins directory
+# Database Configuration
+WORDPRESS_DB_HOST=db
+WORDPRESS_DB_USER=wordpress
+WORDPRESS_DB_PASSWORD=wordpress
+WORDPRESS_DB_NAME=wordpress
 
-These variables are used for Docker Compose configuration like volume mounts and are NOT automatically passed into containers. You can override them when running docker-compose:
-
-```bash
-# Example: Using a different plugin source path
-export PLUGIN_SRC_PATH=/path/to/your/custom-plugin
-export PLUGIN_DEST_NAME=custom-plugin
-docker-compose up -d
+# WordPress Configuration
+WORDPRESS_DEBUG=1
+WORDPRESS_CONFIG_EXTRA="define('WP_DEBUG_LOG', true); define('WP_DEBUG_DISPLAY', false);"
 ```
 
-### 2. `wordpress.env` File (Container Variables)
+### Using the Environment Variables
 
-The `wordpress.env` file contains variables that are passed directly into the WordPress container:
+1. Copy the example file to create your `.env` file:
+   ```bash
+   cd environment/dev  # or environment/qa
+   cp .env-example .env
+   ```
 
-- `WORDPRESS_DB_HOST`: Database host (typically "db")
-- `WORDPRESS_DB_USER`: Database user
-- `WORDPRESS_DB_PASSWORD`: Database password
-- `WORDPRESS_DB_NAME`: Database name
-- `WORDPRESS_DEBUG`: Enable/disable WordPress debug mode
-- Other WordPress-specific configuration
+2. Modify the values in `.env` as needed for your setup.
 
-These variables configure the WordPress application inside the container.
+3. The variables are used by both Docker Compose and the WordPress container, ensuring consistent configuration across the entire stack.
 
-### Why Two Different Files?
+### Security Note
 
-This separation is a best practice because:
+- The `.env` file contains sensitive information and should not be committed to version control.
+- The `.env-example` file is provided as a template and should not contain real credentials.
+- Make sure to add `.env` to your `.gitignore` file.
 - It keeps Docker Compose configuration separate from application configuration
 - It provides better organization of environment variables
 - It allows for different handling of different types of variables
