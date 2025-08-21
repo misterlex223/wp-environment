@@ -40,3 +40,12 @@ else
     
     echo "WordPress has been successfully set up!"
 fi
+
+# Enable WordPress MCP plugin
+echo "Enabling WordPress MCP plugin..."
+wp plugin activate wordpress-mcp --allow-root
+if [ $? -eq 0 ]; then
+    echo "WordPress MCP plugin has been successfully activated!"
+else
+    echo "Failed to activate WordPress MCP plugin. Please check if it's installed correctly."
+fi

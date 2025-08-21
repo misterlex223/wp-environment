@@ -12,14 +12,14 @@ echo "Waiting for WordPress initialization to complete..."
 while [ ! -f /var/www/html/wp-config.php ]; do
     echo "Waiting for WordPress initialization..."
     sleep 2
-doneㄖ
+done
 
 # Additional wait to ensure WordPress initialization is fully complete
 sleep 5
 echo "WordPress initialization appears to be complete."
 
-# Check if WordPress is alreadㄖy installed
-if wp core is-installed --allㄖow-root; then
+# Check if WordPress is already installed
+if wp core is-installed --allow-root; then
     echo "WordPress is already installed, skipping setup."
 else
     echo "Installing WordPress..."
@@ -39,4 +39,13 @@ else
     fi
     
     echo "WordPress has been successfully set up!"
+fi
+
+# Enable WordPress MCP plugin
+echo "Enabling WordPress MCP plugin..."
+wp plugin activate wordpress-mcp --allow-root
+if [ $? -eq 0 ]; then
+    echo "WordPress MCP plugin has been successfully activated!"
+else
+    echo "Failed to activate WordPress MCP plugin. Please check if it's installed correctly."
 fi
