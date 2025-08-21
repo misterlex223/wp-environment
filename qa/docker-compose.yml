@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  wordpress:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wp-qa
+    env_file:
+      - wordpress.env
+    depends_on:
+      - db
+    networks:
+      - wp_network
+    ports:
+      - "8081:80"
+    volumes:
+      - wordpress_qa_data:/var/www/html
+      - ${PLUGIN_SRC_PATH}:/var/www/html/wp-content/plugins/${PLUGIN_DEST_NAME}
+      - ./xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+      - ./logs:/var/dev-log
+      
+  db:
+    image: mysql:5.7
+    container_name: wp-qa-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword_qa
+      MYSQL_DATABASE: wordpress_qa
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress_qa
+    volumes:
+      - db_qa_data:/var/lib/mysql
+    networks:
+      - wp_network
+
+networks:
+  wp_network:
+    name: wp-qa-network
+
+volumes:
+  wordpress_qa_data:
+  db_qa_data:

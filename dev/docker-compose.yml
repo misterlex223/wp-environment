@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  wordpress:
+    # image: wordpress:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wp-dev
+    env_file:
+      - wordpress.env
+    depends_on:
+      - db
+    networks:
+      - wp_network
+    ports:
+      - "8080:80"
+    volumes:
+      - wordpress_data:/var/www/html
+      - ${PLUGIN_SRC_PATH}:/var/www/html/wp-content/plugins/${PLUGIN_DEST_NAME}   # 將 Plugin 挂載到 WordPress
+      - ./xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini           # 將 Xdebug 設定檔掛載到容器
+      - ./logs:/var/dev-log
+      
+  db:
+    image: mysql:5.7
+    container_name: wp-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - wp_network
+
+networks:
+  wp_network:
+    name: wp-dev-network
+
+volumes:
+  wordpress_data:
+  db_data:
