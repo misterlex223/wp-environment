@@ -10,7 +10,6 @@ environment/
 │   ├── Dockerfile          # WordPress with MCP and development tools
 │   ├── docker-compose.yml  # Docker Compose configuration with WordPress, MySQL, and phpMyAdmin
 │   ├── wordpress-setup.sh  # Automatic WordPress installation script
-│   ├── generate-jwt.sh     # Script to generate JWT tokens for admin user
 │   ├── .env                # Environment variables (copy from .env-example)
 │   ├── .env-example        # Example environment variables
 │   └── xdebug.ini          # Xdebug configuration for development
@@ -18,7 +17,6 @@ environment/
 │   ├── Dockerfile          # WordPress with MCP for QA testing
 │   ├── docker-compose.yml  # Docker Compose configuration for QA
 │   ├── wordpress-setup.sh  # Automatic WordPress installation script
-│   ├── generate-jwt.sh     # Script to generate JWT tokens for admin user
 │   ├── .env                # Environment variables (copy from .env-example)
 │   ├── .env-example        # Example environment variables
 │   └── xdebug.ini          # Minimal Xdebug configuration for QA
@@ -89,24 +87,6 @@ The MCP server is configured with:
 
 - Dev environment: `WPMCP_DEBUG=true` for detailed logging
 - QA environment: `WPMCP_DEBUG=false` for production-like behavior
-
-### JWT Authentication
-
-Both environments automatically generate JWT tokens for the admin user during setup:
-
-- Tokens are valid for 30 days
-- Tokens are displayed in the console when starting the environment
-- Tokens can be used for authenticated API requests to the MCP server
-
-To manually generate a new JWT token:
-
-```bash
-# For development environment
-docker exec -it wp-wordpress /usr/local/bin/generate-jwt.sh
-
-# For QA environment
-docker exec -it wp-qa-wordpress /usr/local/bin/generate-jwt.sh
-```
 
 ## Automatic WordPress Setup
 
