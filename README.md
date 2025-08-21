@@ -6,18 +6,21 @@ This repository contains Docker configurations for WordPress plugin development 
 
 ```
 environment/
-├── dev/                    # Development environment
+├── dev/                    # Developmbent environment
 │   ├── Dockerfile          # WordPress with MCP and development tools
-│   ├── docker-compose.yml  # Docker Compose configuration with WordPress and MySQL
+│   ├── docker-compose.yml  # Docker Compose configuration with WordPress, MySQL, and phpMyAdmin
+│   ├── wordpress-setup.sh  # Automatic WordPress installation script
 │   ├── .env                # Environment variables (copy from .env-example)
 │   ├── .env-example        # Example environment variables
 │   └── xdebug.ini          # Xdebug configuration for development
 ├── qa/                     # QA environment
 │   ├── Dockerfile          # WordPress with MCP for QA testing
 │   ├── docker-compose.yml  # Docker Compose configuration for QA
+│   ├── wordpress-setup.sh  # Automatic WordPress installation script
 │   ├── .env                # Environment variables (copy from .env-example)
 │   ├── .env-example        # Example environment variables
 │   └── xdebug.ini          # Minimal Xdebug configuration for QA
+├── setup.sh                # Environment setup script
 ├── start-dev.sh            # Start development environment
 ├── stop-dev.sh             # Stop development environment
 ├── start-qa.sh             # Start QA environment
@@ -31,8 +34,11 @@ The development environment is configured for active plugin development with:
 - WordPress with latest version
 - WordPress MCP server for AI development workflows
 - MySQL 5.7 database
+- phpMyAdmin for database management
+- Automatic WordPress setup (no installation wizard)
 - Xdebug enabled for debugging
 - Git, Composer, and Node.js for development workflows
+- WP-CLI for WordPress management
 
 ### Usage
 
@@ -42,6 +48,7 @@ docker-compose up -d
 ```
 
 Access the WordPress site at http://localhost:8080
+Access phpMyAdmin at http://localhost:8181
 
 ## QA Environment
 
@@ -50,8 +57,11 @@ The QA environment is configured for testing with:
 - WordPress with latest version
 - WordPress MCP server with debugging disabled
 - MySQL 5.7 database
+- phpMyAdmin for database management
+- Automatic WordPress setup (no installation wizard)
 - Xdebug disabled for production-like testing
 - Separate network and volume configuration from development
+- WP-CLI for WordPress management
 
 ### Usage
 
@@ -61,6 +71,7 @@ docker-compose up -d
 ```
 
 Access the QA WordPress site at http://localhost:8081
+Access phpMyAdmin at http://localhost:8182
 
 ## WordPress MCP Server
 
@@ -76,6 +87,33 @@ The MCP server is configured with:
 
 - Dev environment: `WPMCP_DEBUG=true` for detailed logging
 - QA environment: `WPMCP_DEBUG=false` for production-like behavior
+
+## Automatic WordPress Setup
+
+Both environments include an automatic WordPress setup feature that eliminates the need to go through the WordPress installation wizard:
+
+- WordPress is automatically installed with the settings defined in your `.env` file
+- The setup script uses WP-CLI to configure WordPress during container startup
+- If WordPress is already installed, the setup is skipped
+
+### Configuration Options
+
+You can customize the WordPress installation by setting these variables in your `.env` file:
+
+- `WORDPRESS_TITLE` - The title of your WordPress site
+- `WORDPRESS_ADMIN_USER` - Admin username
+- `WORDPRESS_ADMIN_PASSWORD` - Admin password
+- `WORDPRESS_ADMIN_EMAIL` - Admin email address
+- `WORDPRESS_LOCALE` - Site language (e.g., en_US, zh_TW)
+
+### Database Management
+
+Each environment includes phpMyAdmin for easy database management:
+
+- Development environment: http://localhost:8181
+- QA environment: http://localhost:8182
+
+Use the database credentials from your `.env` file to log in.
 
 ## Plugin Development
 
@@ -105,6 +143,13 @@ WORDPRESS_DB_NAME=wordpress
 # WordPress Configuration
 WORDPRESS_DEBUG=1
 WORDPRESS_CONFIG_EXTRA="define('WP_DEBUG_LOG', true); define('WP_DEBUG_DISPLAY', false);"
+
+# WordPress Initial Setup Configuration
+WORDPRESS_TITLE="WordPress Development Site"
+WORDPRESS_ADMIN_USER=admin
+WORDPRESS_ADMIN_PASSWORD=admin
+WORDPRESS_ADMIN_EMAIL=admin@example.com
+WORDPRESS_LOCALE=en_US
 ```
 
 ### Using the Environment Variables
@@ -142,5 +187,5 @@ You can customize these environments by:
 
 - Modifying the Dockerfile to include additional tools
 - Updating docker-compose.yml to add services
-- Adjusting environment variables in wordpress.env
+- Adjusting environment variables in .env
 - Configuring Xdebug settings in xdebug.ini

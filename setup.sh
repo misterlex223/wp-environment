@@ -42,7 +42,6 @@ setup_environment() {
     
     # Copy configuration files from examples
     copy_example_file "$env_type/.env-example" "$env_type/.env"
-    copy_example_file "$env_type/wordpress.env-example" "$env_type/wordpress.env"
     copy_example_file "$env_type/xdebug.ini-example" "$env_type/xdebug.ini"
     
     # Ask for plugin path customization
@@ -67,7 +66,7 @@ setup_environment() {
     fi
     
     # Ask for database customization
-    if [ -f "$env_type/wordpress.env" ]; then
+    if [ -f "$env_type/.env" ]; then
         echo -e "\n${YELLOW}Do you want to customize database settings for $env_type environment? (y/n)${NC}"
         read -r customize_db
         
@@ -81,20 +80,20 @@ setup_environment() {
             echo -e "${YELLOW}Enter database name:${NC}"
             read -r db_name
             
-            # Update wordpress.env file with user input
+            # Update .env file with user input
             if [ -n "$db_user" ]; then
-                sed -i "s|WORDPRESS_DB_USER=.*|WORDPRESS_DB_USER=$db_user|" "$env_type/wordpress.env"
+                sed -i "s|WORDPRESS_DB_USER=.*|WORDPRESS_DB_USER=$db_user|" "$env_type/.env"
             fi
             
             if [ -n "$db_password" ]; then
-                sed -i "s|WORDPRESS_DB_PASSWORD=.*|WORDPRESS_DB_PASSWORD=$db_password|" "$env_type/wordpress.env"
+                sed -i "s|WORDPRESS_DB_PASSWORD=.*|WORDPRESS_DB_PASSWORD=$db_password|" "$env_type/.env"
             fi
             
             if [ -n "$db_name" ]; then
-                sed -i "s|WORDPRESS_DB_NAME=.*|WORDPRESS_DB_NAME=$db_name|" "$env_type/wordpress.env"
+                sed -i "s|WORDPRESS_DB_NAME=.*|WORDPRESS_DB_NAME=$db_name|" "$env_type/.env"
             fi
             
-            echo -e "${GREEN}Database configuration updated in $env_type/wordpress.env${NC}"
+            echo -e "${GREEN}Database configuration updated in $env_type/.env${NC}"
         fi
     fi
     

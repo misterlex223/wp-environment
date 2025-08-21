@@ -18,6 +18,12 @@ services:
       WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
       WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
       WORDPRESS_DEBUG: ${WORDPRESS_DEBUG}
+      # WordPress initial setup configuration
+      WORDPRESS_TITLE: ${WORDPRESS_TITLE:-WordPress QA Site}
+      WORDPRESS_ADMIN_USER: ${WORDPRESS_ADMIN_USER:-admin}
+      WORDPRESS_ADMIN_PASSWORD: ${WORDPRESS_ADMIN_PASSWORD:-admin}
+      WORDPRESS_ADMIN_EMAIL: ${WORDPRESS_ADMIN_EMAIL:-admin@example.com}
+      WORDPRESS_LOCALE: ${WORDPRESS_LOCALE:-en_US}
     volumes:
       - wordpress_qa_data:/var/www/html
       - ${PLUGIN_SRC_PATH}:/var/www/html/wp-content/plugins/${PLUGIN_DEST_NAME}
@@ -35,6 +41,20 @@ services:
       MYSQL_PASSWORD: wordpress_qa
     volumes:
       - db_qa_data:/var/lib/mysql
+    networks:
+      - wp_network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: wp-qa-phpmyadmin
+    depends_on:
+      - db
+    restart: always
+    ports:
+      - "8182:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: rootpassword_qa
     networks:
       - wp_network
 
